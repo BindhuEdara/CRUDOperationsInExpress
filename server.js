@@ -14,7 +14,7 @@ app.get("/students", (req, res) => {
 app.post("/students", (req, res) => {
    let rawData = fs.readFileSync("./db.json", "utf-8");
    let parsedData = JSON.parse(rawData);
-   let students = parsedData.students; 
+   let students = parsedData.students;
    let newId = students[students.length - 1].id + 1;
    let newStudent = {
      id: students.length > 0 ? newId : 1,
@@ -71,40 +71,32 @@ app.put("/students", (req, res) => {
 });
 
 
-app.delete("/students/:id", (req, res) => {
-  // 1. Read data from db.json
-  const rawData = fs.readFileSync("./db.json", "utf-8");
-  const parsedData = JSON.parse(rawData);
-  const students = parsedData.students;
+/// Delete Todo. --> student Id sending through Req.Body
+app.delete("/students", (req, res) => {
+  let studentIdToBeDeleted = req.body.id;
+  /// 1. read the data from db.json
+  /// 2. Parse it
+  /// 3. Access todos
+  // 4.Filter out all the todos except todo of todoId present in the body
+  // 5. Upadte the Filtered todo in db.json again
 
-  // 2. Get id from URL params
-  const studentId = Number(req.params.id);
-
-  // 3. Find student index
-  const studentIndex = students.findIndex(
-    (student) => student.id === studentId
-  );
-
-  // 4. If student not found
-  if (studentIndex === -1) {
-    return res.status(404).json({
-      message: "Student not found",
-    });
+  let rawData = fs.readFileSync("./db.json", "utf-8"); ///1.
+  let parsedData = JSON.parse(rawData); /// 2.
+  let students = parsedData.students; ///3.
+  let filteredStudents = students.filter((el) => el.id != studentIdToBeDeleted);
+  if (filteredStudents.length == students.length) {
+    /// which means do difference in filtered and original todos
+    //  which means todo not found
+    res.json({ message: "Student Not Found" });
+    return;
   }
-
-  // 5. Remove student from array
-  const deletedStudent = students.splice(studentIndex, 1);
-
-  // 6. Save updated data to db.json
-  fs.writeFileSync("./db.json", JSON.stringify(parsedData, null, 2));
-
-  // 7. Send response
-  res.json({
-    message: "Student deleted successfully",
-    student: deletedStudent[0],
-  });
+  // console.log("filteredTodos", filteredTodos);
+  parsedData.students = filteredStudents;
+  /// Before pushing into db.json, stringify the data
+  let stringiffiedData = JSON.stringify(parsedData);
+  fs.writeFileSync("./db.json", stringiffiedData);
+  res.json({ message: "Student Deleted" });
 });
-
 
 app.listen(3000, () => {
   console.log("Server is running on http://localhost:3000");
