@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "name": "crudoperationsinexpress",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "server.js",
+  "devDependencies": {},
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
